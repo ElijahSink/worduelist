@@ -147,9 +147,9 @@ def main() -> None:
     # on non command i.e message - echo the message on Telegram
     dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, handle_text))
 
-    logger.info("Starting webhook on port %s")
+    logger.info("Starting webhook on port %s", PORT)
     updater.start_webhook(listen="0.0.0.0", port=PORT, url_path=TOKEN)
-    updater.bot.setWebhook(WEBHOOK_URL + TOKEN)
+    updater.bot.set_webhook(WEBHOOK_URL + TOKEN)
 
     # Start the Bot
     updater.start_polling()
