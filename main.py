@@ -134,7 +134,7 @@ def main() -> None:
     # Create the Updater and pass it your bot's token.
     TOKEN = os.environ["BOT_TOKEN"]
     PORT = int(os.environ["PORT"])
-    WEBHOOK_URL = os.environ["HEROKU_WEBHOOK_URL"]
+    WEBHOOK_URL = os.environ["WEBHOOK_URL"]
 
     updater = Updater(TOKEN)
 
