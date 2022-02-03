@@ -17,8 +17,13 @@ import logging
 import os
 
 from telegram import ForceReply, Update
-from telegram.ext import (CallbackContext, CommandHandler, Filters,
-                          MessageHandler, Updater)
+from telegram.ext import (
+    CallbackContext,
+    CommandHandler,
+    Filters,
+    MessageHandler,
+    Updater,
+)
 
 # Enable logging
 logging.basicConfig(
