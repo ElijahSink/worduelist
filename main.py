@@ -132,7 +132,7 @@ def main() -> None:
     """Start the bot."""
     # Create the Updater and pass it your bot's token.
     TOKEN = os.environ["BOT_TOKEN"]
-    PORT = int(os.environ["WEBHOOK_PORT"])
+    PORT = int(os.environ["PORT"])
     WEBHOOK_URL = os.environ["WEBHOOK_URL"]
 
     updater = Updater(TOKEN)
@@ -148,8 +148,9 @@ def main() -> None:
     dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, handle_text))
 
     logger.info("Starting webhook on port %s", PORT)
-    updater.start_webhook(listen="0.0.0.0", port=PORT, url_path=TOKEN)
-    updater.bot.set_webhook(WEBHOOK_URL + TOKEN)
+    updater.start_webhook(
+        listen="0.0.0.0", port=PORT, url_path=TOKEN, webhook_url=WEBHOOK_URL + TOKEN
+    )
 
     # Start the Bot
     updater.start_polling()
