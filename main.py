@@ -15,16 +15,10 @@ bot.
 
 import logging
 import os
-from bdb import effective
 
 from telegram import ForceReply, Update
-from telegram.ext import (
-    CallbackContext,
-    CommandHandler,
-    Filters,
-    MessageHandler,
-    Updater,
-)
+from telegram.ext import (CallbackContext, CommandHandler, Filters,
+                          MessageHandler, Updater)
 
 # Enable logging
 logging.basicConfig(
@@ -148,7 +142,8 @@ def main() -> None:
     # on non command i.e message - echo the message on Telegram
     dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, handle_text))
 
-    updater.start_webhook(listen="0.0.0.0", port=int(PORT), url_path=TOKEN)
+    logger.info("Starting webhook on port %s")
+    updater.start_webhook(listen="0.0.0.0", port=PORT, url_path=TOKEN)
     updater.bot.setWebhook(WEBHOOK_URL + TOKEN)
 
     # Start the Bot
