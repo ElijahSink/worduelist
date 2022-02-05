@@ -1,20 +1,7 @@
-#!/usr/bin/env python
-# pylint: disable=C0116,W0613
-# This program is dedicated to the public domain under the CC0 license.
-
-"""
-Simple Bot to reply to Telegram messages.
-First, a few handler functions are defined. Then, those functions are passed to
-the Dispatcher and registered at their respective places.
-Then, the bot is started and runs until we press Ctrl-C on the command line.
-Usage:
-Basic Echobot example, repeats messages.
-Press Ctrl-C on the command line or send a signal to the process to stop the
-bot.
-"""
-
+import json
 import logging
 import os
+from datetime import date, timedelta
 
 from telegram import ForceReply, Update
 from telegram.ext import (
@@ -54,6 +41,10 @@ def help_command(update: Update, context: CallbackContext) -> None:
     if update.message:
         update.message.reply_text(HELP_TEXT)
 
+
+"""
+WORDUEL STUFF
+"""
 
 key = [
     ["A", "36"],
@@ -128,12 +119,36 @@ def handle_text(update: Update, context: CallbackContext) -> None:
         update.message.reply_text("I'm not sure what to do with that.\n" + HELP_TEXT)
 
 
+"""
+WORDLE STUFF
+"""
+
+with open("./word_list.json") as f:
+    word_list = json.load(f)
+
+
+WORDLE_DAY_0 = date(2021, 6, 19)
+
+
+def wordle_command(update: Update, context: CallbackContext) -> None:
+    if not update.message:
+        return
+
+    text = update.message.text
+    if text:
+        text = text.replace("/wordle", "").strip()
+
+    offset = date.today() - WORDLE_DAY_0
+    if text:
+        offset += timedelta(days=int(text))
+
+    update.message.reply_text(word_list[offset.days])
+
+
 def main() -> None:
     """Start the bot."""
     # Create the Updater and pass it your bot's token.
     TOKEN = os.environ["BOT_TOKEN"]
-    PORT = int(os.environ["PORT"])
-    WEBHOOK_URL = os.environ["WEBHOOK_URL"]
 
     updater = Updater(TOKEN)
 
@@ -143,14 +158,19 @@ def main() -> None:
     # on different commands - answer in Telegram
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("help", help_command))
+    dispatcher.add_handler(CommandHandler("wordle", wordle_command))
 
-    # on non command i.e message - echo the message on Telegram
     dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, handle_text))
 
-    logger.info("Starting webhook on port %s", PORT)
-    updater.start_webhook(
-        listen="0.0.0.0", port=PORT, url_path=TOKEN, webhook_url=WEBHOOK_URL + TOKEN
-    )
+    if os.getenv("USE_POLLING"):
+        updater.start_polling()
+    else:
+        PORT = int(os.environ["PORT"])
+        WEBHOOK_URL = os.environ["WEBHOOK_URL"]
+        logger.info("Starting webhook on port %s", PORT)
+        updater.start_webhook(
+            listen="0.0.0.0", port=PORT, url_path=TOKEN, webhook_url=WEBHOOK_URL + TOKEN
+        )
 
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
     # SIGTERM or SIGABRT. This should be used most of the time, since

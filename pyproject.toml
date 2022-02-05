@@ -14,7 +14,7 @@ homepage = ""
 [tool.pdm]
 [tool.pdm.scripts]
 _.env_file = ".env"
-
+dev = "nodemon main.py"
 
 [build-system]
 requires = ["pdm-pep517"]
