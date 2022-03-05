@@ -1,0 +1,19 @@
+{
+  "name": "worduelist_bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "get_quordle_words.js",
+  "scripts": {
+    "test": "node get_quordle_words.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ElijahSink/worduelist.git"
+  },
+  "author": "Elijah Sink",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ElijahSink/worduelist/issues"
+  },
+  "homepage": "https://github.com/ElijahSink/worduelist#readme"
+}
