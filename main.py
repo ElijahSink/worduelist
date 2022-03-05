@@ -164,7 +164,7 @@ def quordle_command(update: Update, context: CallbackContext) -> None:
 
     text = update.message.text
     if text:
-        text = text.replace("/wordle", "").strip()
+        text = text.replace("/quordle", "").strip()
 
     try:
         offset = int(text)
