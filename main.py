@@ -169,8 +169,7 @@ def quordle_command(update: Update, context: CallbackContext) -> None:
     try:
         offset = int(text)
     except ValueError:
-        update.message.reply_text("Invalid date offset. Please supply an integer.")
-        return
+        offset = 0
 
     update.message.reply_text(get_quordle_answer(offset))
 
