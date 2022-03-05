@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import subprocess
 from datetime import date, timedelta
 
 from telegram import ForceReply, Update
@@ -143,6 +144,35 @@ def wordle_command(update: Update, context: CallbackContext) -> None:
         offset += timedelta(days=int(text))
 
     update.message.reply_text(word_list[offset.days])
+
+
+"""
+QUORDLE STUFF
+"""
+
+
+def get_quordle_answer(date_offset: int) -> str:
+    words = json.loads(
+        subprocess.check_output(["node", "get_quordle_words.js", str(date_offset)])
+    )
+    return " ".join(words)
+
+
+def quordle_command(update: Update, context: CallbackContext) -> None:
+    if not update.message:
+        return
+
+    text = update.message.text
+    if text:
+        text = text.replace("/wordle", "").strip()
+
+    try:
+        offset = int(text)
+    except ValueError:
+        update.message.reply_text("Invalid date offset. Please supply an integer.")
+        return
+
+    update.message.reply_text(get_quordle_answer(offset))
 
 
 def main() -> None:
