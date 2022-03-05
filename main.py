@@ -189,6 +189,7 @@ def main() -> None:
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("help", help_command))
     dispatcher.add_handler(CommandHandler("wordle", wordle_command))
+    dispatcher.add_handler(CommandHandler("quordle", quordle_command))
 
     dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, handle_text))
 
