@@ -1,9 +1,11 @@
+import base64
 import json
 import logging
 import os
 import subprocess
 from datetime import date, timedelta
 
+import requests
 from telegram import ForceReply, Update
 from telegram.ext import (
     CallbackContext,
@@ -174,6 +176,42 @@ def quordle_command(update: Update, context: CallbackContext) -> None:
     update.message.reply_text(get_quordle_answer(offset))
 
 
+"""
+WAFFLE STUFF
+"""
+
+
+def format_waffle(s: str) -> str:
+    return f"{' '.join(s[0:5])}\n{s[5]}   {s[6]}   {s[7]}\n{' '.join(s[8:13])}\n{s[13]}   {s[14]}   {s[15]}\n{' '.join(s[16:21])}\n"
+
+
+def get_waffle_answer(date_offset: int) -> str:
+    num = 1 + date_offset
+    encoded_bytes = requests.get(f"https://wafflegame.net/daily{num}.txt").text
+    decoded_bytes = base64.b64decode(encoded_bytes)
+    decoded_str = decoded_bytes.decode("UTF-16")
+    parsed_obj = json.loads(decoded_str)
+    solution = parsed_obj["solution"]
+
+    return format_waffle(solution)
+
+
+def waffle_command(update: Update, context: CallbackContext) -> None:
+    if not update.message:
+        return
+
+    text = update.message.text
+    if text:
+        text = text.replace("/waffle", "").strip()
+
+    try:
+        offset = int(text)
+    except ValueError:
+        offset = 0
+
+    update.message.reply_text(get_quordle_answer(offset))
+
+
 def main() -> None:
     """Start the bot."""
     # Create the Updater and pass it your bot's token.
@@ -189,6 +227,7 @@ def main() -> None:
     dispatcher.add_handler(CommandHandler("help", help_command))
     dispatcher.add_handler(CommandHandler("wordle", wordle_command))
     dispatcher.add_handler(CommandHandler("quordle", quordle_command))
+    dispatcher.add_handler(CommandHandler("waffle", waffle_command))
 
     dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, handle_text))
 
