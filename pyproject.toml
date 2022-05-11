@@ -3,7 +3,10 @@ name = "worduelist-bot"
 version = "0.0.1"
 description = "A bot for solving codes for Samuel Britnell's Worduel: https://gamejolt.com/games/worduel/685260"
 authors = [{ name = "Elijah Sink", email = "theminorprofit@gmail.com" }]
-dependencies = ["python-telegram-bot>=13.11"]
+dependencies = [
+    "python-telegram-bot>=13.11",
+    "requests>=2.27.1",
+]
 requires-python = ">=3.10"
 license = { text = "MIT" }
 
