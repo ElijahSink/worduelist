@@ -15,6 +15,8 @@ from telegram.ext import (
     Updater,
 )
 
+from solve_waffle import WaffleSolver, list_solution
+
 # Enable logging
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
@@ -182,7 +184,7 @@ WAFFLE STUFF
 
 
 def format_waffle(s: str) -> str:
-    return f"{' '.join(s[0:5])}\n{s[5]}   {s[6]}   {s[7]}\n{' '.join(s[8:13])}\n{s[13]}   {s[14]}   {s[15]}\n{' '.join(s[16:21])}\n"
+    return f"```\n{' '.join(s[0:5])}\n{s[5]}   {s[6]}   {s[7]}\n{' '.join(s[8:13])}\n{s[13]}   {s[14]}   {s[15]}\n{' '.join(s[16:21])}\n```"
 
 
 def get_waffle_answer(date_offset: int) -> str:
@@ -191,9 +193,16 @@ def get_waffle_answer(date_offset: int) -> str:
     decoded_bytes = base64.b64decode(encoded_bytes)
     decoded_str = decoded_bytes.decode("UTF-16")
     parsed_obj = json.loads(decoded_str)
+    puzzle = parsed_obj["puzzle"]
     solution = parsed_obj["solution"]
+    print(puzzle, solution)
 
-    return format_waffle(solution)
+    solver = WaffleSolver(puzzle, solution, 10, 2)
+    solution_path = solver.solve()
+    if not solution_path:
+        return format_waffle(solution)
+
+    return f"{list_solution(solution_path)}\n{format_waffle(solution)}"
 
 
 def waffle_command(update: Update, context: CallbackContext) -> None:
@@ -209,9 +218,7 @@ def waffle_command(update: Update, context: CallbackContext) -> None:
     except ValueError:
         offset = 0
 
-    update.message.reply_text(
-        f"```\n{get_waffle_answer(offset)}\n```", parse_mode=ParseMode.MARKDOWN
-    )
+    update.message.reply_text(get_waffle_answer(offset), parse_mode=ParseMode.MARKDOWN)
 
 
 def main() -> None:
@@ -243,9 +250,6 @@ def main() -> None:
             listen="0.0.0.0", port=PORT, url_path=TOKEN, webhook_url=WEBHOOK_URL + TOKEN
         )
 
-    # Run the bot until you press Ctrl-C or the process receives SIGINT,
-    # SIGTERM or SIGABRT. This should be used most of the time, since
-    # start_polling() is non-blocking and will stop the bot gracefully.
     updater.idle()
 
 
