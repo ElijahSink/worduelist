@@ -6,7 +6,7 @@ import subprocess
 from datetime import date, timedelta
 
 import requests
-from telegram import ForceReply, Update
+from telegram import ForceReply, ParseMode, Update
 from telegram.ext import (
     CallbackContext,
     CommandHandler,
@@ -209,7 +209,9 @@ def waffle_command(update: Update, context: CallbackContext) -> None:
     except ValueError:
         offset = 0
 
-    update.message.reply_text(f"```\n{get_waffle_answer(offset)}\n```")
+    update.message.reply_text(
+        f"```\n{get_waffle_answer(offset)}\n```", parse_mode=ParseMode.MARKDOWN
+    )
 
 
 def main() -> None:
