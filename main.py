@@ -209,7 +209,7 @@ def waffle_command(update: Update, context: CallbackContext) -> None:
     except ValueError:
         offset = 0
 
-    update.message.reply_text(get_waffle_answer(offset))
+    update.message.reply_text(f"```\n{get_waffle_answer(offset)}\n```")
 
 
 def main() -> None:
