@@ -137,8 +137,12 @@ if __name__ == "__main__":
     solution = "FUNKYLIAIONICNJHTOAST"
     puzzle = "WEURLAENGLNINREUGOHWE"
     solution = "WHEELRNAOWNERNUGGUILE"
+    puzzle = "TAENERGTREPERPSERSDMXIARETALERMNVSCSREVD"
+    solution = "PRETENDRXLIEMPRESSMRVCAVERAGEDSTREASTERN"
+    puzzle = "CEYASPEMLDPHORURSEUAP"
+    solution = "CAMPSUAYROPERDLUSHEEP"
 
-    solver = WaffleSolver(puzzle, solution, 10, 2)
+    solver = WaffleSolver(puzzle, solution, 10, 20)
     solution = solver.solve()
     if solution:
         print(f"Solution in {len(solution)} swaps!")
