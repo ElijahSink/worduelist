@@ -1,12 +1,12 @@
 import time
 from collections import defaultdict
-from typing import DefaultDict, NamedTuple, Optional
+from typing import DefaultDict, NamedTuple, Optional, Union
 
 """
-A solution to this problem will be a list of tuples, 
-indicating the optimal sequence of swaps to make 
+A solution to this problem will be a list of tuples,
+indicating the optimal sequence of swaps to make
 `puzzle` look like `solution`.
-For example, it could be: 
+For example, it could be:
 [(1, 20), (7, 4), (9, 21), (19, 5), (2, 3), (12, 15), (8, 17), (15, 16), (4, 6), (13, 5)]
 """
 
@@ -20,6 +20,8 @@ class ScoredSwap(NamedTuple):
     src: int  # [0-sz]
     dest: int  # [0-sz]
     double: bool  # whether this swap is doubly productive
+    src_letter: str
+    dest_letter: str
 
     def scoreless(self) -> Swap:
         return Swap(self.src, self.dest)
@@ -62,11 +64,11 @@ class WaffleSolver:
 
                 # let's check if this swap is doubly productive
                 if self.puzzle[pos_b] == self.solution[pos_a]:
-                    return ScoredSwap(pos_a, pos_b, True)  # doubly productive! do it
+                    return ScoredSwap(pos_a, pos_b, True, self.puzzle[pos_a], self.puzzle[pos_b])  # doubly productive! do it
 
                 best_pos = pos_b  # don't return immediately because there could be a better solution later
 
-        return ScoredSwap(pos_a, best_pos, False)
+        return ScoredSwap(pos_a, best_pos, False, self.puzzle[pos_a], self.puzzle[best_pos])
 
     def puzzle_is_solved(self) -> bool:
         return self.puzzle == self.solution
@@ -82,8 +84,8 @@ class WaffleSolver:
         )
         return incorrect
 
-    def perform_swap(self, swap: Swap) -> None:
-        a, b = sorted(swap)
+    def perform_swap(self, swap: Union[Swap, ScoredSwap]) -> None:
+        a, b = sorted([swap.src, swap.dest])
 
         p = self.puzzle
         self.puzzle = p[:a] + p[b] + p[a + 1 : b] + p[a] + p[b + 1 :]
@@ -91,7 +93,7 @@ class WaffleSolver:
     def time_expired(self) -> bool:
         return time.time() - self.start_time > self.max_time
 
-    def __solve(self, swaps_so_far: list[Swap] = []) -> Optional[list[Swap]]:
+    def __solve(self, swaps_so_far: list[ScoredSwap] = []) -> Optional[list[ScoredSwap]]:
         print(swaps_so_far)
         if self.puzzle_is_solved():
             return swaps_so_far
@@ -114,7 +116,7 @@ class WaffleSolver:
         )
 
         for scored_swap in possible_swaps:
-            swap = scored_swap.scoreless()
+            swap = scored_swap
             self.perform_swap(swap)
             solution_path = self.__solve(swaps_so_far + [swap])
             self.puzzle = current_puzzle
@@ -128,8 +130,8 @@ class WaffleSolver:
         return solution
 
 
-def list_solution(sol: list[Swap]) -> str:
-    return "\n".join([f"Swap {swap.src} with {swap.dest}" for swap in sol])
+def list_solution(sol: list[ScoredSwap]) -> str:
+    return "\n".join([f"Swap {swap.src} ({swap.src_letter}) with {swap.dest} ({swap.dest_letter})" for swap in sol])
 
 
 if __name__ == "__main__":
@@ -141,8 +143,10 @@ if __name__ == "__main__":
     solution = "PRETENDRXLIEMPRESSMRVCAVERAGEDSTREASTERN"
     puzzle = "CEYASPEMLDPHORURSEUAP"
     solution = "CAMPSUAYROPERDLUSHEEP"
+    puzzle = "SIVROYBDOCTMSBOTGRNSERSDAIISEROUUIEESESU"
+    solution = "OBVIOUSSIUUMOBSTERORSGSEASIDEITDRSCENERY"
 
-    solver = WaffleSolver(puzzle, solution, 10, 20)
+    solver = WaffleSolver(puzzle, solution, 20, 20)
     solution = solver.solve()
     if solution:
         print(f"Solution in {len(solution)} swaps!")
